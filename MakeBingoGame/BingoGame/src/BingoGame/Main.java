@@ -16,23 +16,21 @@ public class Main {
 		BingoCard card = new BingoCard(iend, jend);
 		Lottery lot = new Lottery();
 		
-		card.iniPlace();
+		ArrayList<ArrayList<String>> number = new ArrayList<>(5);
+		number = card.iniPlace();
+		int lotNum;
 		while(!bingo) {
-			lot.lottery(count);
-//			showTable(iend, jend, number);
+			lotNum = lot.lottery(count);
+			number = card.judgeHit(number, lotNum);
+			card.showTable(number);
+			bingo = card.judgeBingo(number);
 			count++;
 			if(bingo) {
-				System.out.println("nビンゴしました！！！");
 				System.out.println("ビンゴしたのでおわり");
 				break;
 			}
-			System.out.print("終了しますか？（1：終了）：");
-			if(scanner.nextInt() == 1) break;
+			System.out.print("終了しますか？（0：終了）：");
+			if(scanner.nextInt() == 0) break;
 		}
-
-	}
-	
-
-
-	
+	}	
 }
