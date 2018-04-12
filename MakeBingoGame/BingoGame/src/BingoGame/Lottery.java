@@ -1,19 +1,20 @@
 package BingoGame;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class Lottery {
-	private int lotNumber;
-	
-	//コンストラクタ
-	Lottery() {
-	}
-	//当選番号のゲッター
-	public int getLotNumber() {
-		return this.lotNumber;
-	}
-	
-	//当選番号を決めるメソッド
-	public void lottery() {
-		this.lotNumber = (int)Math.floor(Math.random() * 100 + 1);
+	private List<String> lotNumbers = new ArrayList<>();
+
+	// コンストラクタ
+	Lottery(List<String> randomNumbers) {
+		this.lotNumbers = randomNumbers;
+		Collections.shuffle(this.lotNumbers);
 	}
 
+	// 当選番号一個ずつ返すメソッド
+	public int lottery(int lotCount) {
+		return Integer.parseInt(this.lotNumbers.get(lotCount));
+	}
 }
