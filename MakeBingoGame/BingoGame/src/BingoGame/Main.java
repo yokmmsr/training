@@ -21,17 +21,19 @@ public class Main {
 		BingoCard card = new BingoCard(sideSize);
 		card.initialPlace();
 		card.showTable();
-		Lottery lot = new Lottery(card.getRandomNumbers());
+
+		Lottery lot = new Lottery();
 		int lotCount = 0;
 		while (true) {
-			System.out.print("番号を引きますか？（1：引く 0：終了）：");
-			if (scanner.nextInt() == 0)
+			System.out.print("番号を引きますか？（1：引く　0：終了する）：");
+			if (scanner.nextInt() == 0) {
 				break;
-			int lotNumber = lot.lottery(lotCount);
+			}
+			int lotteryNumber = lot.lottery();
 			lotCount++;
 			System.out.println("");
-			System.out.println(lotCount + "回目：当選番号は" + lotNumber + "です");
-			card.judgeHit(lotNumber);
+			System.out.println(lotCount + "回目：当選番号は" + lotteryNumber + "です");
+			card.judgeHit(lotteryNumber);
 			card.showTable();
 			if (card.judgeBingo()) {
 				System.out.println(card.getBingoCount() + "ビンゴ！！！");

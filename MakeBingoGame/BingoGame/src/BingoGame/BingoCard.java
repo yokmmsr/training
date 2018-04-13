@@ -9,21 +9,11 @@ public class BingoCard {
 	private int bingoCount = 0;
 	private List<String> randomNumbers = new ArrayList<>(); /* ランダムな数字を生成するためのList */
 	private List<List<String>> cardNumbers = new ArrayList<>(); /* N x N ビンゴカードの番号を格納するList */
-	final String hitMarker = "○";
+	final String HIT_MARKER = "○";
 
 	// コンストラクタ
 	BingoCard(int sideSize) {
 		this.sideSize = sideSize;
-	}
-
-	// ランダムな数字生成用Listのゲッター
-	public List<String> getRandomNumbers() {
-		return this.randomNumbers;
-	}
-
-	// ビンゴカード番号のセッター
-	public void setCardNumbers(List<List<String>> cardNumbers) {
-		this.cardNumbers = cardNumbers;
 	}
 
 	// ビンゴした列数のゲッター
@@ -50,14 +40,14 @@ public class BingoCard {
 	}
 
 	// 当選したかどうか判定・数字を更新するメソッド
-	public void judgeHit(int lotNumber) {
-		String n = String.valueOf(lotNumber);
+	public void judgeHit(int lotteryNumber) {
+		String n = String.valueOf(lotteryNumber);
 		for (List<String> columnNumbers : this.cardNumbers) {
 			int hitIndex = 0;
 			for (String number : columnNumbers) {
 				if (n.equals(number)) {
 					System.out.println(n + "が当たりました !");
-					columnNumbers.set(hitIndex, hitMarker);
+					columnNumbers.set(hitIndex, HIT_MARKER);
 					break;
 				}
 				hitIndex++;
@@ -70,39 +60,46 @@ public class BingoCard {
 		int hitCount = 0;
 		for (List<String> columnNumbers : this.cardNumbers) { /* 横がそろっているかチェック */
 			for (String number : columnNumbers) {
-				if (!(number.equals(hitMarker)))
+				if (!number.equals(HIT_MARKER)) {
 					break;
+				}
 				hitCount++;
 			}
-			if (hitCount == this.sideSize)
+			if (hitCount == this.sideSize) {
 				this.bingoCount++;
+			}
 			hitCount = 0;
 		}
 		for (int j = 0; j < this.sideSize; j++) { /* 縦がそろっているかチェック */
 			for (List<String> rowNumbers : this.cardNumbers) {
-				if (!(rowNumbers.get(j).equals(hitMarker)))
+				if (!rowNumbers.get(j).equals(HIT_MARKER)) {
 					break;
+				}
 				hitCount++;
 			}
-			if (hitCount == this.sideSize)
+			if (hitCount == this.sideSize) {
 				this.bingoCount++;
+			}
 			hitCount = 0;
 		}
 		for (int i = 0; i < this.sideSize; i++) { /* 斜め↘︎がそろっているかチェック */
-			if (!(this.cardNumbers.get(i).get(i).equals(hitMarker)))
+			if (!this.cardNumbers.get(i).get(i).equals(HIT_MARKER))
 				break;
 			hitCount++;
-			if (hitCount == this.sideSize)
+			if (hitCount == this.sideSize) {
 				this.bingoCount++;
+			}
 		}
 		hitCount = 0;
 
 		for (int i = 0; i < this.sideSize; i++) { /* 斜め↗︎がそろっているかチェック */
-			if (!(this.cardNumbers.get(i).get(this.sideSize - i - 1).equals(hitMarker)))
+			if (!this.cardNumbers.get(i).get(this.sideSize - i - 1).equals(HIT_MARKER)) {
 				break;
+			}
 			hitCount++;
-			if (hitCount == this.sideSize)
+			if (hitCount == this.sideSize) {
 				this.bingoCount++;
+			}
 		}
 		hitCount = 0;
 
@@ -112,8 +109,9 @@ public class BingoCard {
 	// 表形式で表示するメソッド
 	public void showTable() {
 		System.out.print(" ┌");
-		for (int i = 0; i < this.sideSize * 2; i++)
+		for (int i = 0; i < this.sideSize * 2; i++) {
 			System.out.print(" -");
+		}
 		System.out.println(" ┐");
 
 		for (List<String> columnNumbers : this.cardNumbers) {
@@ -124,8 +122,9 @@ public class BingoCard {
 			System.out.println(" │");
 		}
 		System.out.print(" └");
-		for (int i = 0; i < this.sideSize * 2; i++)
+		for (int i = 0; i < this.sideSize * 2; i++) {
 			System.out.print(" -");
+		}
 		System.out.println(" ┘");
 	}
 }

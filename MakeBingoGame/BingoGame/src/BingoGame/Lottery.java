@@ -5,16 +5,21 @@ import java.util.Collections;
 import java.util.List;
 
 public class Lottery {
-	private List<String> lotNumbers = new ArrayList<>();
+	private List<Integer> storedNumbers = new ArrayList<>();
+	private int lotteryNumber;
 
 	// コンストラクタ
-	Lottery(List<String> randomNumbers) {
-		this.lotNumbers = randomNumbers;
-		Collections.shuffle(this.lotNumbers);
+	Lottery() {
+		for (int i = 1; i <= 100; i++) {
+			this.storedNumbers.add(i);
+		}
 	}
 
-	// 当選番号一個ずつ返すメソッド
-	public int lottery(int lotCount) {
-		return Integer.parseInt(this.lotNumbers.get(lotCount));
+	// 当選番号を一個ずつ返すメソッド
+	public int lottery() {
+		Collections.shuffle(this.storedNumbers);
+		this.lotteryNumber = this.storedNumbers.get(0);
+		this.storedNumbers.remove(0);
+		return this.lotteryNumber;
 	}
 }
