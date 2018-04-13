@@ -10,8 +10,9 @@ public class Main {
 		int sideSize;
 		while (true) {
 			sideSize = scanner.nextInt();
-			if (sideSize > 0 && sideSize <= 10)
+			if (sideSize > 0 && sideSize <= 10) {
 				break;
+			}
 			System.out.print("カードのサイズは1〜10の範囲しか選べません！：");
 		}
 		System.out.println(sideSize + "×" + sideSize + "マスのビンゴを始めます");
