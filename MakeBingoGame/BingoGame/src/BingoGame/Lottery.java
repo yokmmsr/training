@@ -6,7 +6,6 @@ import java.util.List;
 
 public class Lottery {
 	private List<Integer> storedNumbers = new ArrayList<>();
-	private int lotteryNumber;
 
 	// コンストラクタ
 	Lottery() {
@@ -18,8 +17,8 @@ public class Lottery {
 	// 当選番号を一個ずつ返すメソッド
 	public int lottery() {
 		Collections.shuffle(this.storedNumbers);
-		this.lotteryNumber = this.storedNumbers.get(0);
+		int lotteryNumber = this.storedNumbers.get(0);
 		this.storedNumbers.remove(0);
-		return this.lotteryNumber;
+		return lotteryNumber;
 	}
 }

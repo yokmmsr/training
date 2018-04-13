@@ -70,6 +70,7 @@ public class BingoCard {
 			}
 			hitCount = 0;
 		}
+
 		for (int j = 0; j < this.sideSize; j++) { /* 縦がそろっているかチェック */
 			for (List<String> rowNumbers : this.cardNumbers) {
 				if (!rowNumbers.get(j).equals(HIT_MARKER)) {
@@ -82,9 +83,11 @@ public class BingoCard {
 			}
 			hitCount = 0;
 		}
+
 		for (int i = 0; i < this.sideSize; i++) { /* 斜め↘︎がそろっているかチェック */
-			if (!this.cardNumbers.get(i).get(i).equals(HIT_MARKER))
+			if (!this.cardNumbers.get(i).get(i).equals(HIT_MARKER)) {
 				break;
+			}
 			hitCount++;
 			if (hitCount == this.sideSize) {
 				this.bingoCount++;

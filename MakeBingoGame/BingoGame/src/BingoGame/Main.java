@@ -1,8 +1,5 @@
 package BingoGame;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Collections;
 import java.util.Scanner;
 
 public class Main {
@@ -25,7 +22,7 @@ public class Main {
 		Lottery lot = new Lottery();
 		int lotCount = 0;
 		while (true) {
-			System.out.print("番号を引きますか？（1：引く　0：終了する）：");
+			System.out.print("番号を引きますか？（1：引く 0：終了する）：");
 			if (scanner.nextInt() == 0) {
 				break;
 			}
