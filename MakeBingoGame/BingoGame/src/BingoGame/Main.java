@@ -6,6 +6,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		Scanner scanner = new Scanner(System.in);
+
 		System.out.print("ビンゴカードのサイズを決めてください：");
 		int sideSize;
 		while (true) {
@@ -19,7 +20,6 @@ public class Main {
 		BingoCard card = new BingoCard(sideSize);
 		card.initialPlace();
 		card.showTable();
-
 		Lottery lot = new Lottery();
 		int lotCount = 0;
 		while (true) {
@@ -29,7 +29,7 @@ public class Main {
 			}
 			int lotteryNumber = lot.lottery();
 			lotCount++;
-			System.out.println("");
+			System.out.println();
 			System.out.println(lotCount + "回目：当選番号は" + lotteryNumber + "です");
 			card.judgeHit(lotteryNumber);
 			card.showTable();
