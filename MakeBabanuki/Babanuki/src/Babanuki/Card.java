@@ -5,14 +5,22 @@ import java.util.List;
 import java.util.Collections;
 
 public class Card {
-	private List<String> allCards = new ArrayList<>();
+	private String cardMark;
+	private int cardIndex;
 
 	// コンストラクタ
-	Card() {
+	Card(String cardMark, int cardIndex) {
+		this.cardMark = cardMark;
+		this.cardIndex = cardIndex;
 	}
 
 	// ゲッター
-	public List<String> getAllCards() {
-		return this.allCards;
+	public String getCardMark() {
+		return this.cardMark;
 	}
+
+	public int getCardIndex() {
+		return this.cardIndex;
+	}
+
 }
