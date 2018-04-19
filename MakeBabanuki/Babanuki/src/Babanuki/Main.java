@@ -18,16 +18,16 @@ public class Main {
 		List<List<Card>> playerHands = new ArrayList<>();
 		playerHands = devideCards(createAllCards(), playerNumber);
 
-		 /* プレイヤーを生成し初期手札のダブりを捨てる */
+		/* プレイヤーを生成し初期手札のダブりを捨てる */
 		List<Player> allPlayers = new ArrayList<>();
 		for (int i = 0; i < playerNumber; i++) {
 			Player player = new Player(playerHands.get(i));
 			allPlayers.add(player);
 			System.out.print("＜Player" + (allPlayers.indexOf(player) + 1) + "の手札＞");
-			player.showPlayerHand();
+			player.showPlayerCards();
 			player.discardPairCard();
 			System.out.print("＜Player" + (allPlayers.indexOf(player) + 1) + "の手札＞");
-			player.showPlayerHand();
+			player.showPlayerCards();
 			System.out.println("");
 		}
 
@@ -110,40 +110,44 @@ public class Main {
 				givePlayer = i + 1; /* 最後じゃない人がカードを引く時は隣の人の手札から引く */
 			}
 			/* drowPlayerはgivePlayer手札（毎回シャッフルされる）の先頭カードを引く */
-			Collections.shuffle(allPlayers.get(givePlayer).getPlayerHand());
-			List<Card> tempDrowHand = new ArrayList<>(allPlayers.get(drowPlayer).getPlayerHand());
-			List<Card> tempGiveHand = new ArrayList<>(allPlayers.get(givePlayer).getPlayerHand());
+			int drowIndex = 0; /* 先頭のカードを引く */
+			Card exchangeCard = new Card();
+			exchangeCard = allPlayers.get(givePlayer).passCard(drowIndex);
+			allPlayers.get(drowPlayer).addCard(exchangeCard);
 
-			tempDrowHand.add(tempGiveHand.get(0));
-			if (tempGiveHand.get(0).getCardMark().equals("JOKER")) {
+			if (exchangeCard.isJoker()) {
 				System.out.println("=> Player" + (drowPlayer + 1) + "がPlayer" + (givePlayer + 1) + "の"
-						+ tempGiveHand.get(0).getCardMark() + "を引きました");
+						+ exchangeCard.getCardMark() + "を引きました");
 			} else {
 				System.out.println("=> Player" + (drowPlayer + 1) + "がPlayer" + (givePlayer + 1) + "の"
-						+ tempGiveHand.get(0).getCardMark() + tempGiveHand.get(0).getCardIndex() + "を引きました");
+						+ exchangeCard.getCardMark() + exchangeCard.getCardIndex() + "を引きました");
 			}
-			tempGiveHand.remove(0);
-			allPlayers.get(drowPlayer).setPlayerHand(tempDrowHand);
-			allPlayers.get(givePlayer).setPlayerHand(tempGiveHand);
 
 			System.out.println("");
 			System.out.print("＜Player" + (drowPlayer + 1) + "の手札＞");
-			allPlayers.get(drowPlayer).showPlayerHand();
-			allPlayers.get(i).discardPairCard();
+			allPlayers.get(drowPlayer).showPlayerCards();
+			allPlayers.get(drowPlayer).discardPairCard();
 			System.out.print("＜Player" + (drowPlayer + 1) + "の手札＞");
-			allPlayers.get(drowPlayer).showPlayerHand();
-			System.out.println("");
-			if (allPlayers.get(drowPlayer).getPlayerHand().size() == 0) {
-				System.out.println("=> Player" + (drowPlayer + 1) + "があがりました！！");
-				endCount++;
-				break;
-			} else if (allPlayers.get(givePlayer).getPlayerHand().size() == 0) {
-				System.out.println("Player" + (givePlayer + 1) + "があがりました！！");
+			allPlayers.get(drowPlayer).showPlayerCards();
+			if (isFinish(allPlayers, drowPlayer, givePlayer)) {
 				endCount++;
 				break;
 			}
 		}
 		return endCount;
+	}
+
+	// プレイヤーが上がったかどうか判定するメソッド
+	public static boolean isFinish(List<Player> allPlayers, int drowPlayer, int givePlayer) {
+		if (allPlayers.get(drowPlayer).getPlayerCards().size() == 0) {
+			System.out.println("=> Player" + (drowPlayer + 1) + "があがりました！！");
+			return true;
+		} else if (allPlayers.get(givePlayer).getPlayerCards().size() == 0) {
+			System.out.println("Player" + (givePlayer + 1) + "があがりました！！");
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 }

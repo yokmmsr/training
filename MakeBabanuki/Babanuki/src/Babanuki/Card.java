@@ -13,6 +13,8 @@ public class Card {
 		this.cardMark = cardMark;
 		this.cardIndex = cardIndex;
 	}
+	Card() { /* 特に何もしない、Card型のオブジェクトだけ用意する時 */
+	}
 
 	// ゲッター
 	public String getCardMark() {
@@ -23,4 +25,17 @@ public class Card {
 		return this.cardIndex;
 	}
 
+	// JOKERを引いたか判定するメソッド
+	public boolean isJoker() {
+		return this.cardMark.equals("JOKER");
+	}
+
+	// カードを表示するtoStringメソッド
+	public String toString() {
+		if (isJoker()) {
+			return this.getCardMark() + "";
+		} else {
+			return this.getCardMark() + String.valueOf(this.getCardIndex()) + " ";
+		}
+	}
 }
