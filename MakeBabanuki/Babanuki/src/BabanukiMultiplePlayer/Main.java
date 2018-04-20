@@ -128,7 +128,7 @@ public class Main {
 			allPlayers.get(drowPlayer).discardPairCard();
 			allPlayers.get(drowPlayer).showPlayerCards();
 
-			endCount = showFinishMessage(allPlayers, drowPlayer, givePlayer, endCount);
+			endCount = renewEndCount(allPlayers, drowPlayer, givePlayer, endCount);
 			if (endCount == allPlayers.size() - 1) { /* 上がった人数が全プレイヤー数-1になったら終了 */
 				break;
 			}
@@ -173,8 +173,8 @@ public class Main {
 		return givePlayer;
 	}
 
-	// カードを引かれるgivePlayerの番号を決めるメソッド
-	public static int showFinishMessage(List<Player> allPlayers, int drowPlayer, int givePlayer, int endCount) {
+	// endCountを更新するメソッド
+	public static int renewEndCount(List<Player> allPlayers, int drowPlayer, int givePlayer, int endCount) {
 		List<Integer> exchangePlayers = new ArrayList<>();
 		exchangePlayers.add(drowPlayer);
 		exchangePlayers.add(givePlayer);
