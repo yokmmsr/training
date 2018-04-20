@@ -31,13 +31,14 @@ public class Main {
 		/* カードの交換と番号重複削除を繰り返してババ抜きを進めていく */
 		int endCount = 0;
 		int turnCount = 1;
-		while (!(endCount == playerNumber - 1)) {
+		while (endCount < playerNumber - 1) {
 			System.out.println("");
-			System.out.println("【" + turnCount + "ターン目】");
+			System.out.println("--------【" + turnCount + "ターン目】--------");
 			endCount = changeCard(allPlayers, endCount);
 			turnCount++;
 		}
-		System.out.println("+++++ ババ抜きおわり ++++");
+		System.out.println("");
+		System.out.println("+++++++++ ババ抜きおわり +++++++++");
 	}
 
 	// プレイ人数が適切か確認するメソッド
@@ -100,27 +101,13 @@ public class Main {
 		int drowPlayer;
 		int givePlayer;
 		for (int i = 0; i < allPlayers.size(); i++) {
-			if (allPlayers.get(i).isFinish()) {
+			/* カードを引く人drowPlayerの番号を決める */
+			drowPlayer = setDrowPlayer(allPlayers, i);
+			if (drowPlayer == 999) { /* 前ターンで既に上がっているプレイヤーの番号ならcontinue */
 				continue;
 			}
-			drowPlayer = i;
-
-			givePlayer = drowPlayer + 1; /* 最後じゃない人がカードを引く時は隣の人の手札から引く */
-			while (true) {
-				if (givePlayer == allPlayers.size()) {
-					givePlayer = drowPlayer;
-					break;
-				}
-				if (allPlayers.get(givePlayer).isFinish()) {
-					givePlayer++;
-					if (givePlayer == allPlayers.size()) {
-						givePlayer = drowPlayer;
-						break;
-					}
-					continue;
-				}
-				break;
-			}
+			/* カードを引かれる人givePlayerの番号を決める */
+			givePlayer = setGivePlayer(allPlayers, drowPlayer);
 
 			/* drowPlayerはgivePlayer手札（毎回シャッフルされる）の先頭カードを引く */
 			int drowIndex = 0; /* 先頭のカードを引く */
@@ -141,25 +128,62 @@ public class Main {
 			allPlayers.get(drowPlayer).discardPairCard();
 			allPlayers.get(drowPlayer).showPlayerCards();
 
-			if (allPlayers.get(drowPlayer).isFinish()) {
-				System.out.println("=> Player" + (drowPlayer + 1) + "があがりました！！");
-				endCount++;
-				continue;
-			} else if (allPlayers.get(givePlayer).isFinish()) {
-				System.out.println("=> Player" + (givePlayer + 1) + "があがりました！！");
-				endCount++;
-				continue;
+			endCount = showFinishMessage(allPlayers, drowPlayer, givePlayer, endCount);
+			if (endCount == allPlayers.size() - 1) { /* 上がった人数が全プレイヤー数-1になったら終了 */
+				break;
 			}
 		}
 		return endCount;
-
 	}
 
-	// カードを引くプレイヤー、引かれるプレイヤーの番号を制御するメソッド
-	public static void setDrowGiveNumber(List<Player> allPlayers, int drowPlayer) {
-		if (allPlayers.get(drowPlayer).isFinish()) {
-
+	// カードを引くdrowPlayerの番号を決めるメソッド
+	public static int setDrowPlayer(List<Player> allPlayers, int index) {
+		if (allPlayers.get(index).isFinish()) {
+			return 999; /* 前ターンで既に上がっているプレイヤーの番号なら999を返し参照元でcontinue */
+		} else {
+			return index;
 		}
 	}
 
+	// カードを引かれるgivePlayerの番号を決めるメソッド
+	public static int setGivePlayer(List<Player> allPlayers, int drowPlayer) {
+		int givePlayer = 999;
+		/* 基本的に隣（自分の番号+1の人）から引く */
+		/* 隣の人が既に上がっているならそのまた隣の人…というように繰り返す */
+		for (int j = drowPlayer + 1; j < allPlayers.size(); j++) {
+			if (allPlayers.get(j).isFinish()) {
+				continue;
+			} else {
+				givePlayer = j;
+				break;
+			}
+		}
+		/* drowPlayerより後の人が全員上がってしまったら、drowPlayerより */
+		/* 前の人から引くことになる */
+		if (givePlayer == 999) {
+			for (int j = 0; j < drowPlayer; j++) {
+				if (allPlayers.get(j).isFinish()) {
+					continue;
+				} else {
+					givePlayer = j;
+					break;
+				}
+			}
+		}
+		return givePlayer;
+	}
+
+	// カードを引かれるgivePlayerの番号を決めるメソッド
+	public static int showFinishMessage(List<Player> allPlayers, int drowPlayer, int givePlayer, int endCount) {
+		List<Integer> exchangePlayers = new ArrayList<>();
+		exchangePlayers.add(drowPlayer);
+		exchangePlayers.add(givePlayer);
+		for (int player : exchangePlayers) {
+			if (allPlayers.get(player).isFinish()) {
+				System.out.println("=> Player" + (player + 1) + "があがりました！！");
+				endCount++;
+			}
+		}
+		return endCount;
+	}
 }

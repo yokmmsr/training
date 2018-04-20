@@ -13,6 +13,7 @@ public class Card {
 		this.cardMark = cardMark;
 		this.cardIndex = cardIndex;
 	}
+
 	Card() { /* 特に何もしない、Card型のオブジェクトだけ用意する時 */
 	}
 

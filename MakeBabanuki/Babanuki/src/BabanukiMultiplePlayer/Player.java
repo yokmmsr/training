@@ -59,6 +59,9 @@ public class Player {
 				this.cards.add(tempCard); /* ダミーではない要素だけを格納し直す */
 			}
 		}
+		if (tempList.size() == this.cards.size()) {
+			System.out.println("=> ペアになるカードはありません");
+		}
 		System.out.println("");
 	}
 
@@ -75,14 +78,9 @@ public class Player {
 		this.cards.remove(drowIndex);
 		return exchangeCard;
 	}
-	
+
 	// プレイヤーが上がったかどうか判定するメソッド
 	public boolean isFinish() {
-		if (this.cards.size() == 0) {
-//			System.out.println("=> Player" + this.playerIndex + "があがりました！！");
-			return true;
-		} else {
-			return false;
-		}
+		return this.cards.size() == 0;
 	}
 }
