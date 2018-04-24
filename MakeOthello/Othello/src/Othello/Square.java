@@ -31,13 +31,9 @@ public class Square {
 		return this.isSandwiched;
 	}
 	
-	// 置いた時に石の状態を変更する（空→黒石or白石）メソッド
-	public void changePutStone(int playerNumber) {
-		if (playerNumber == 1) {
-			this.stone = BLACK_STONE; /* 先手player（number = 1）なら黒 */
-		} else {
-			this.stone = WHITE_STONE; /* 後手player（number = 2）なら白 */
-		}
+	// 置かれた石に応じて色を変更するメソッド
+	public void changePutStone(String putStone) {
+		this.stone = putStone;
 	}
 
 	// 挟まれた時に石の状態を変更する（黒石⇄白石）メソッド

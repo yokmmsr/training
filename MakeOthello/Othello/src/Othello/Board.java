@@ -52,13 +52,20 @@ public class Board {
 	public void createSquares() {
 		List<List<Square>> allSquares = new ArrayList<>();
 		int squareNumber = 1;
+		final int INITIAL_BLACK_STONE_UPPER = 28; /* 最初に中央上段に置かれる黒石の位置番号 */
+		final int INITIAL_WHITE_STONE_UPPER = 29; /* 最初に中央上段に置かれる白石の位置番号 */
+		final int INITIAL_WHITE_STONE_LOWER = 36; /* 最初に中央下段に置かれる白石の位置番号 */
+		final int INITIAL_BLACK_STONE_LOWER = 37; /* 最初に中央下段に置かれる黒石の位置番号 */
+
 		for (int i = 0; i < this.sideSize; i++) {
 			List<Square> rowSquares = new ArrayList<>();
 			for (int j = 0; j < this.sideSize; j++) {
-				if (squareNumber == 28 || squareNumber == 37) { /* 最初に中央に置かれる黒石2個 */
+				if (squareNumber == INITIAL_BLACK_STONE_UPPER
+						|| squareNumber == INITIAL_BLACK_STONE_LOWER) { /* 最初に中央に置かれる黒石2個 */
 					Square square = new Square(squareNumber, BLACK_STONE);
 					rowSquares.add(square);
-				} else if (squareNumber == 29 || squareNumber == 36) { /* 最初に中央に置かれる石2個 */
+				} else if (squareNumber == INITIAL_WHITE_STONE_UPPER
+						|| squareNumber == INITIAL_WHITE_STONE_LOWER) { /* 最初に中央に置かれる石2個 */
 					Square square = new Square(squareNumber, WHITE_STONE);
 					rowSquares.add(square);
 				} else {
@@ -87,15 +94,11 @@ public class Board {
 		/* 石を置いたマスから→方向の確認︎ */
 		List<Square> tempSquares = new ArrayList<>();
 		for (int j = columnSquare + 1; j < this.sideSize; j++) {
-			String searchStone = this.allSquares.get(rowSquare).get(j).getStone();
-			if (BLANK.equals(searchStone)) {
-				break;
-			}
-			if (putStone.equals(searchStone)) {
-				for (Square square : tempSquares) {
-					square.setSandwiched();
-				}
-				this.sandwichCount++;
+			String searchedStone = this.allSquares.get(rowSquare).get(j).getStone();
+			String neighboringStone = this.allSquares.get(rowSquare).get(columnSquare + 1).getStone(); /* 置いた石の直ぐ隣の石 */
+
+			boolean judgeBreak = searchStones(tempSquares, putStone, neighboringStone, searchedStone);
+			if (judgeBreak) {
 				break;
 			}
 			tempSquares.add(this.allSquares.get(rowSquare).get(j)); /* 一時的にsearchStoneの情報を格納 */
@@ -104,15 +107,10 @@ public class Board {
 		/* 石を置いたマスから←方向の確認︎ */
 		tempSquares = new ArrayList<>();
 		for (int j = columnSquare - 1; j >= 0; j--) {
-			String searchStone = this.allSquares.get(rowSquare).get(j).getStone();
-			if (BLANK.equals(searchStone)) {
-				break;
-			}
-			if (putStone.equals(searchStone)) {
-				for (Square square : tempSquares) {
-					square.setSandwiched();
-				}
-				this.sandwichCount++;
+			String searchedStone = this.allSquares.get(rowSquare).get(j).getStone();
+			String neighboringStone = this.allSquares.get(rowSquare).get(columnSquare - 1).getStone(); /* 置いた石の直ぐ隣の石 */
+			boolean judgeBreak = searchStones(tempSquares, putStone, neighboringStone, searchedStone);
+			if (judgeBreak) {
 				break;
 			}
 			tempSquares.add(this.allSquares.get(rowSquare).get(j));
@@ -121,15 +119,10 @@ public class Board {
 		/* 石を置いたマスから↑方向の確認︎ */
 		tempSquares = new ArrayList<>();
 		for (int i = rowSquare - 1; i >= 0; i--) {
-			String searchStone = this.allSquares.get(i).get(columnSquare).getStone();
-			if (BLANK.equals(searchStone)) {
-				break;
-			}
-			if (putStone.equals(searchStone)) {
-				for (Square square : tempSquares) {
-					square.setSandwiched();
-				}
-				this.sandwichCount++;
+			String searchedStone = this.allSquares.get(i).get(columnSquare).getStone();
+			String neighboringStone = this.allSquares.get(rowSquare - 1).get(columnSquare).getStone(); /* 置いた石の直ぐ隣の石 */
+			boolean judgeBreak = searchStones(tempSquares, putStone, neighboringStone, searchedStone);
+			if (judgeBreak) {
 				break;
 			}
 			tempSquares.add(this.allSquares.get(i).get(columnSquare));
@@ -138,15 +131,10 @@ public class Board {
 		/* 石を置いたマスから↓方向の確認︎ */
 		tempSquares = new ArrayList<>();
 		for (int i = rowSquare + 1; i < this.sideSize; i++) {
-			String searchStone = this.allSquares.get(i).get(columnSquare).getStone();
-			if (BLANK.equals(searchStone)) {
-				break;
-			}
-			if (putStone.equals(searchStone)) {
-				for (Square square : tempSquares) {
-					square.setSandwiched();
-				}
-				this.sandwichCount++;
+			String searchedStone = this.allSquares.get(i).get(columnSquare).getStone();
+			String neighboringStone = this.allSquares.get(rowSquare + 1).get(columnSquare).getStone(); /* 置いた石の直ぐ隣の石 */
+			boolean judgeBreak = searchStones(tempSquares, putStone, neighboringStone, searchedStone);
+			if (judgeBreak) {
 				break;
 			}
 			tempSquares.add(this.allSquares.get(i).get(columnSquare));
@@ -159,15 +147,10 @@ public class Board {
 			if (j == this.sideSize) {
 				break;
 			}
-			String searchStone = this.allSquares.get(i).get(j).getStone();
-			if (BLANK.equals(searchStone)) {
-				break;
-			}
-			if (putStone.equals(searchStone)) {
-				for (Square square : tempSquares) {
-					square.setSandwiched();
-				}
-				this.sandwichCount++;
+			String searchedStone = this.allSquares.get(i).get(j).getStone();
+			String neighboringStone = this.allSquares.get(rowSquare - 1).get(columnSquare + 1).getStone(); /* 置いた石の直ぐ隣の石 */
+			boolean judgeBreak = searchStones(tempSquares, putStone, neighboringStone, searchedStone);
+			if (judgeBreak) {
 				break;
 			}
 			tempSquares.add(this.allSquares.get(i).get(j));
@@ -181,15 +164,10 @@ public class Board {
 			if (j == this.sideSize) {
 				break;
 			}
-			String searchStone = this.allSquares.get(i).get(j).getStone();
-			if (BLANK.equals(searchStone)) {
-				break;
-			}
-			if (putStone.equals(searchStone)) {
-				for (Square square : tempSquares) {
-					square.setSandwiched();
-				}
-				this.sandwichCount++;
+			String searchedStone = this.allSquares.get(i).get(j).getStone();
+			String neighboringStone = this.allSquares.get(rowSquare + 1).get(columnSquare + 1).getStone(); /* 置いた石の直ぐ隣の石 */
+			boolean judgeBreak = searchStones(tempSquares, putStone, neighboringStone, searchedStone);
+			if (judgeBreak) {
 				break;
 			}
 			tempSquares.add(this.allSquares.get(i).get(j));
@@ -203,15 +181,10 @@ public class Board {
 			if (j < 0) {
 				break;
 			}
-			String searchStone = this.allSquares.get(i).get(j).getStone();
-			if (BLANK.equals(searchStone)) {
-				break;
-			}
-			if (putStone.equals(searchStone)) {
-				for (Square square : tempSquares) {
-					square.setSandwiched();
-				}
-				this.sandwichCount++;
+			String searchedStone = this.allSquares.get(i).get(j).getStone();
+			String neighboringStone = this.allSquares.get(rowSquare - 1).get(columnSquare - 1).getStone(); /* 置いた石の直ぐ隣の石 */
+			boolean judgeBreak = searchStones(tempSquares, putStone, neighboringStone, searchedStone);
+			if (judgeBreak) {
 				break;
 			}
 			tempSquares.add(this.allSquares.get(i).get(j));
@@ -225,27 +198,36 @@ public class Board {
 			if (j < 0) {
 				break;
 			}
-			String searchStone = this.allSquares.get(i).get(j).getStone();
-			if (BLANK.equals(searchStone)) {
-				break;
-			}
-			if (putStone.equals(searchStone)) {
-				for (Square square : tempSquares) {
-					square.setSandwiched();
-				}
-				this.sandwichCount++;
+			String searchedStone = this.allSquares.get(i).get(j).getStone();
+			String neighboringStone = this.allSquares.get(rowSquare + 1).get(columnSquare - 1).getStone(); /* 置いた石の直ぐ隣の石 */
+			boolean judgeBreak = searchStones(tempSquares, putStone, neighboringStone, searchedStone);
+			if (judgeBreak) {
 				break;
 			}
 			tempSquares.add(this.allSquares.get(i).get(j));
 			j--;
 		}
-//		turnOverStone();
+	}
+
+	// 石の色を一個ずつ確認するメソッド
+	public boolean searchStones(List<Square> tempSquares, String putStone, String neighboringStone,String searchedStone) {
+		if (putStone.equals(neighboringStone)) { /* 置いた石の隣の石が同じ色なら走査終了 */
+			return true;
+		} else if (BLANK.equals(searchedStone)) { /* 石が置かれていないところまで達したら走査終了 */
+			return true;
+		} else if (putStone.equals(searchedStone)) {
+			for (Square square : tempSquares) {
+				square.setSandwiched();
+			}
+			this.sandwichCount++;
+			return true;
+		}
+		return false;
 	}
 
 	// 異なる色の石を挟んでいるか確認するメソッド
 	public boolean isStoneSandwiched() {
 		boolean isSandwichCount = this.sandwichCount > 0;
-//		System.out.println("sandwichCount:" + this.sandwichCount + " " +isSandwichCount);
 		this.sandwichCount = 0;
 		return isSandwichCount; /* 1方向でも挟めていればtrue */
 	}
@@ -254,7 +236,13 @@ public class Board {
 	public void turnOverStone(int putStoneSquare, int playerNumber) {
 		int rowSquare = dimension1to2Row(putStoneSquare);
 		int columnSquare = dimension1to2Column(putStoneSquare);
-		this.allSquares.get(rowSquare).get(columnSquare).changePutStone(playerNumber);
+		String putStone = BLANK;
+		if (playerNumber == 1) {
+			putStone = BLACK_STONE; /* 先手player（number = 1）なら黒 */
+		} else {
+			putStone = WHITE_STONE; /* 後手player（number = 2）なら白 */
+		}
+		this.allSquares.get(rowSquare).get(columnSquare).changePutStone(putStone);
 
 		for (List<Square> rowSquares : this.allSquares) {
 			for (Square square : rowSquares) {
@@ -273,7 +261,7 @@ public class Board {
 	}
 
 	// 石の数をカウントするメソッド
-	public void countStones() {
+	public int countStones() {
 		int blackStoneCount = 0;
 		int whiteStoneCount = 0;
 		for (List<Square> rowSquares : this.allSquares) {
@@ -285,8 +273,9 @@ public class Board {
 				}
 			}
 		}
-		System.out.println("先手◉：" + blackStoneCount);
-		System.out.println("後手◎：" + whiteStoneCount);
+		System.out.println("先手[B]：" + blackStoneCount);
+		System.out.println("後手[W]：" + whiteStoneCount);
 		System.out.println("");
+		return blackStoneCount - whiteStoneCount; /* 石の個数差を返す（先手の個数-後手の個数） */
 	}
 }
