@@ -16,11 +16,19 @@ public class Questions {
 	/* Questionsテーブルのカラム名 */
 	final String QUESTIONS_CONTENT = QUESTIONS_TABLE + ".content";
 	final String CORRECTOPTION_ID = "correctOption_id";
+	/* Questionsテーブル内のカラムの番号 */
+	final int CORRECTOPTION_ID_INDEX = 1;
 	/* Optionsテーブルのカラム名 */
 	final String OPTIONS_CONTENT = OPTIONS_TABLE + ".content";
 	final String QUESTION_ID = "question_id";
+	/* Questions+Optionsテーブル内のカラムの番号 */
+	final int QUESTIONS_CONTENT_INDEX = 1;
+	final int OPTIONS_CONTENT_INDEX = 2;
 	/* Recordsテーブルのカラム名 */
 	final String RECORDS_PLAY_DATETIME = "play_datetime";
+	/* Recordsテーブル内のカラムの番号 */
+	final int ANSWER_ID_INDEX = 3;
+	final int JUDGE_INDEX = 4;
 
 	OperateSQL quizSQL; /* SQL文を生成するオブジェクト */
 	LocalDateTime startDateTime;
@@ -52,15 +60,15 @@ public class Questions {
 				QUESTIONS_TABLE, questionNumber);
 		ResultSet questionAndOption = quizSQL.executeJoinSelectSQL(selecteColumn, QUESTIONS_TABLE, OPTIONS_TABLE,
 				joinConditions);
+		Results content = new Results(questionAndOption);
 
-		int count = 0;
-		while (questionAndOption.next()) {
-			if (count == 0) {
-				System.out.println(questionAndOption.getString(1)); /* 抽出したデータの1カラム目は問題文 */
+		// int count = 0;
+		for (int i = 1; i <= 4; i++) {
+			if (i == 1) {
+				System.out.println(content.getContent(i, QUESTIONS_CONTENT_INDEX)); /* 抽出したデータの1カラム目は問題文 */
 				System.out.println("==============================");
 			}
-			count++;
-			System.out.println(count + ". " + questionAndOption.getString(2)); /* 抽出したデータの2カラム目は選択肢 */
+			System.out.println(i + ". " + content.getContent(i, OPTIONS_CONTENT_INDEX)); /* 抽出したデータの2カラム目は選択肢 */
 		}
 		System.out.println("------------------------------");
 	}
@@ -69,19 +77,18 @@ public class Questions {
 	public void answerToQuestions(int questionNumber) throws SQLException {
 		Scanner scanner = new Scanner(System.in);
 		System.out.print("答えは？：");
-		int answer = scanner.nextInt();
-		boolean myJudge = true;
+		int inputAnswer = scanner.nextInt();
+		boolean myJudgement = true;
 
 		String selectConditions = "id = " + questionNumber;
 		ResultSet correctAnswer = quizSQL.executeSelectSQL(CORRECTOPTION_ID, QUESTIONS_TABLE, selectConditions);
-		while (correctAnswer.next()) {
-			myJudge = answer == correctAnswer.getInt(1);
-			System.out.println(myJudge ? "正解！" : "不正解…");
-			System.out.println("");
-		}
+		Results answer = new Results(correctAnswer);
+		myJudgement = inputAnswer == answer.getAnswerId(1, CORRECTOPTION_ID_INDEX); /* 正しい答えは各問題につき1個なので第１引数（ループ回数）は1 */
+		System.out.println(myJudgement ? "正解！" : "不正解…");
+		System.out.println("");
 
 		String insertedTable = DB_NAME + "." + RECORDS_TABLE;
-		String insertValues = String.format("0, %d, %d, %b, ", questionNumber, answer, myJudge);
+		String insertValues = String.format("0, %d, %d, %b, ", questionNumber, inputAnswer, myJudgement);
 		insertValues += "cast('" + this.startDateTime + "' as datetime)";
 		quizSQL.executeInsertSQL(insertedTable, insertValues); /* 結果をrecordsテーブルに格納 */
 	}
@@ -92,19 +99,17 @@ public class Questions {
 		String selectedColumn = "*";
 		String selectConditions = RECORDS_PLAY_DATETIME + " = " + "cast('" + this.startDateTime + "' as datetime)";
 		ResultSet myRecords = quizSQL.executeSelectSQL(selectedColumn, RECORDS_TABLE, selectConditions);
-		Answer answer = new Answer(myRecords);
+		Results records = new Results(myRecords);
 
 		System.out.println("* * * *  成 績  * * * *");
 		System.out.println("\t " + "あなたの解答" + "\t" + "正誤");
 		int correctCount = 0;
-		int questionsCount = 1;
-		while (myRecords.next()) {
-			System.out.println(String.format("%d問目：   \t%d \t %s", questionsCount, myRecords.getInt(3),
-					(myRecords.getBoolean(4) ? "⚪︎" : "×")));
-			if (myRecords.getBoolean(4)) {
+		for (int i = 1; i <= Main.numberOfQuestions; i++) {
+			System.out.println(String.format("%d問目：   \t%d \t %s", i, records.getAnswerId(i, ANSWER_ID_INDEX),
+					(records.isRight(i, JUDGE_INDEX) ? "⚪︎" : "×")));
+			if (records.isRight(i, JUDGE_INDEX)) {
 				correctCount++;
 			}
-			questionsCount++;
 		}
 		System.out.println("");
 		int getScore = correctCount * 20;
