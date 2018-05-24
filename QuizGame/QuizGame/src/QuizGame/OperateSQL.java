@@ -30,11 +30,17 @@ public class OperateSQL {
 				String.format("select %s from %s join %s on %s;", selectedColumn, table1, table2, joinConditions));
 	}
 
-	// テーブルからデータをSELECTするメソッド
+	// テーブルからデータをSELECTするメソッド（whereあり）
 	public ResultSet executeSelectSQL(String selectedColumn, String table, String selectConditions)
 			throws SQLException {
 		return stmt.executeQuery(String.format("select %s from %s where %s;", selectedColumn, table, selectConditions));
 	}
+	// テーブルからデータをSELECTするメソッド（whereなし）
+	public ResultSet executeSelectSQL(String selectedColumn, String table)
+			throws SQLException {
+		return stmt.executeQuery(String.format("select %s from %s;", selectedColumn, table));
+	}
+
 
 	// テーブルにデータをINSERTするメソッド
 	public void executeInsertSQL(String insertedTable, String insertValues) throws SQLException {

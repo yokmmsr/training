@@ -43,8 +43,7 @@ public class Questions {
 	public int countStoredQuestions() throws SQLException {
 
 		String selectedColumn = "count(*)";
-		String selectConditions = "true"; /* where true 無条件で取り出される */
-		ResultSet allQuestionsDB = quizSQL.executeSelectSQL(selectedColumn, QUESTIONS_TABLE, selectConditions);
+		ResultSet allQuestionsDB = quizSQL.executeSelectSQL(selectedColumn, QUESTIONS_TABLE);
 
 		int allQuestions = 0;
 		while (allQuestionsDB.next()) {
