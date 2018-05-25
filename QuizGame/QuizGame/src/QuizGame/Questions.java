@@ -16,19 +16,11 @@ public class Questions {
 	/* Questionsテーブルのカラム名 */
 	final String QUESTIONS_CONTENT = QUESTIONS_TABLE + ".content";
 	final String CORRECTOPTION_ID = "correctOption_id";
-	/* Questionsテーブル内のカラムの番号 */
-	final int CORRECTOPTION_ID_INDEX = 1;
 	/* Optionsテーブルのカラム名 */
 	final String OPTIONS_CONTENT = OPTIONS_TABLE + ".content";
 	final String QUESTION_ID = "question_id";
-	/* Questions+Optionsテーブル内のカラムの番号 */
-	final int QUESTIONS_CONTENT_INDEX = 1;
-	final int OPTIONS_CONTENT_INDEX = 2;
 	/* Recordsテーブルのカラム名 */
 	final String RECORDS_PLAY_DATETIME = "play_datetime";
-	/* Recordsテーブル内のカラムの番号 */
-	final int ANSWER_ID_INDEX = 3;
-	final int JUDGE_INDEX = 4;
 
 	OperateSQL quizSQL; /* SQL文を生成するオブジェクト */
 	LocalDateTime startDateTime;
@@ -59,15 +51,14 @@ public class Questions {
 				QUESTIONS_TABLE, questionNumber);
 		ResultSet questionAndOption = quizSQL.executeJoinSelectSQL(selecteColumn, QUESTIONS_TABLE, OPTIONS_TABLE,
 				joinConditions);
-		Results content = new Results(questionAndOption);
+		DataOfSentence content = new DataOfSentence(questionAndOption);
 
-		// int count = 0;
 		for (int i = 1; i <= 4; i++) {
 			if (i == 1) {
-				System.out.println(content.getContent(i, QUESTIONS_CONTENT_INDEX)); /* 抽出したデータの1カラム目は問題文 */
+				System.out.println(content.getQuestionContents(i)); /* 抽出したデータの1カラム目は問題文 */
 				System.out.println("==============================");
 			}
-			System.out.println(i + ". " + content.getContent(i, OPTIONS_CONTENT_INDEX)); /* 抽出したデータの2カラム目は選択肢 */
+			System.out.println(i + ". " + content.getOptionContents(i)); /* 抽出したデータの2カラム目は選択肢 */
 		}
 		System.out.println("------------------------------");
 	}
@@ -81,8 +72,8 @@ public class Questions {
 
 		String selectConditions = "id = " + questionNumber;
 		ResultSet correctAnswer = quizSQL.executeSelectSQL(CORRECTOPTION_ID, QUESTIONS_TABLE, selectConditions);
-		Results answer = new Results(correctAnswer);
-		myJudgement = inputAnswer == answer.getAnswerId(1, CORRECTOPTION_ID_INDEX); /* 正しい答えは各問題につき1個なので第１引数（ループ回数）は1 */
+		DataOfCorrectAnswer answer = new DataOfCorrectAnswer(correctAnswer);
+		myJudgement = inputAnswer == answer.getCorrectAnswerId(1); /* 正しい答えは各問題につき1個なので第１引数（ループ回数）は1 */
 		System.out.println(myJudgement ? "正解！" : "不正解…");
 		System.out.println("");
 
@@ -98,15 +89,15 @@ public class Questions {
 		String selectedColumn = "*";
 		String selectConditions = RECORDS_PLAY_DATETIME + " = " + "cast('" + this.startDateTime + "' as datetime)";
 		ResultSet myRecords = quizSQL.executeSelectSQL(selectedColumn, RECORDS_TABLE, selectConditions);
-		Results records = new Results(myRecords);
+		DataOfMyAnswer records = new DataOfMyAnswer(myRecords);
 
 		System.out.println("* * * *  成 績  * * * *");
 		System.out.println("\t " + "あなたの解答" + "\t" + "正誤");
 		int correctCount = 0;
 		for (int i = 1; i <= Main.numberOfQuestions; i++) {
-			System.out.println(String.format("%d問目：   \t%d \t %s", i, records.getAnswerId(i, ANSWER_ID_INDEX),
-					(records.isRight(i, JUDGE_INDEX) ? "⚪︎" : "×")));
-			if (records.isRight(i, JUDGE_INDEX)) {
+			System.out.println(
+					String.format("%d問目：   \t%d \t %s", i, records.getAnswerId(i), (records.isRight(i) ? "⚪︎" : "×")));
+			if (records.isRight(i)) {
 				correctCount++;
 			}
 		}
