@@ -48,17 +48,15 @@ end
 
 # ビンゴした人数を返すメソッド
 def check_bingo(cards, lottery_number)
-  bingo_player_count = 0
-  cards.each_with_index do |card, i|
-    puts("【Player#{i + 1}】")
+  cards.each.with_index(1) do |card, i|
+    puts("【Player#{i}】")
     card.judge_hit(lottery_number)
     card.show_table
     if card.bingo? then
       puts("#{card.bingo_count}ビンゴ！！！")
-      bingo_player_count += 1
     end
   end
-  bingo_player_count
+  cards.select{|card| card.bingo?}.count
 end
 
 #### ここからメイン処理 ####
@@ -72,7 +70,6 @@ cards = Array.new
 player_number.times do |i|
   cards << Bingo_card.new(side_size)
   card = cards.at(i)
-  card.initial_place
   puts("【Player#{i + 1}】")
   card.show_table
 end

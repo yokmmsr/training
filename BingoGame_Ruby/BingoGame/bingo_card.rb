@@ -3,10 +3,7 @@ class Bingo_card
 
   def initialize(side_size)
     @side_size = side_size
-  end
-
-  # ビンゴの初期配置を決めるメソッド
-  def initial_place
+    # ビンゴの初期配置を決める処理
     @random_numbers = [*1..100].shuffle
     @card_numbers = (0..@side_size - 1).map {@random_numbers.slice!(0, @side_size)}
   end
@@ -30,11 +27,7 @@ class Bingo_card
     # 横がそろっているかチェック
     @bingo_count += @card_numbers.select {|row_numbers| row_numbers.all? {|number| number == HIT_MARKER}}.count
     # 縦がそろっているかチェック
-    @side_size.times do |i|
-      if @card_numbers.all? {|row_numbers| row_numbers.at(i) == HIT_MARKER} then
-        @bingo_count += 1
-      end
-    end
+    @bingo_count += (0..@side_size - 1).select {|i| @card_numbers.all? {|row_numbers| row_numbers.at(i) == HIT_MARKER}}.count
     # 斜め↘︎がそろっているかチェック
     if @card_numbers.all? {|row_numbers| row_numbers.at(@card_numbers.find_index(row_numbers)) == HIT_MARKER} then
       @bingo_count += 1
