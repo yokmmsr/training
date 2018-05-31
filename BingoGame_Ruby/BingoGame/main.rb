@@ -47,21 +47,19 @@ def check_lottery_number(lot, lot_count)
 end
 
 # ビンゴした人数を返すメソッド
-def check_bingo(cards, player_number, lottery_number)
+def check_bingo(cards, lottery_number)
   bingo_player_count = 0
-  player_number.times do |i|
-    card = cards.at(i)
+  cards.each_with_index do |card, i|
     puts("【Player#{i + 1}】")
     card.judge_hit(lottery_number)
     card.show_table
-    if card.is_bingo then
+    if card.bingo? then
       puts("#{card.bingo_count}ビンゴ！！！")
       bingo_player_count += 1
     end
   end
   bingo_player_count
 end
-
 
 #### ここからメイン処理 ####
 puts("ビンゴカードのサイズを決めてください：")
@@ -82,7 +80,7 @@ end
 lot = Lottery.new
 loop_with_index(1) do |lot_count|
   lottery_number = check_lottery_number(lot, lot_count)
-  bingo_player_count = check_bingo(cards, player_number, lottery_number)
+  bingo_player_count = check_bingo(cards, lottery_number)
   if bingo_player_count > 0 then
     puts("#{bingo_player_count}人ビンゴしたのでおわり")
     break
