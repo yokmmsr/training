@@ -1,17 +1,17 @@
 class Lottery
   def initialize
-    @storedNumbers = []
-    for i in 1..100 do
-      @storedNumbers << i
+    @stored_numbers = []
+    100.times do |i|
+      @stored_numbers << (i + 1)
     end
   end
 
   # 当選番号を1個ずつ返すメソッド
   def lottery
-    @storedNumbers.shuffle!
-    lotteryNumber = @storedNumbers.at(0)
-    @storedNumbers.shift
-    return lotteryNumber
+    @stored_numbers.shuffle!
+    lottery_number = @stored_numbers.at(0)
+    @stored_numbers.shift
+    lottery_number
   end
 
 end

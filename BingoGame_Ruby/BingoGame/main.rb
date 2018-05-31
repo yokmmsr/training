@@ -3,77 +3,88 @@
 require "./bingo_card.rb"
 require "./lottery.rb"
 
-def setSideSize(sideSize)
+# loop_with_indexを使うための設定モジュール
+module Kernel
+  def loop_with_index(initial_number = 0)
+    count = initial_number
+    loop do
+      yield(count)
+      count += 1
+    end
+  end
+end
+
+# 1辺のマス目の数が適切か確認するメソッド
+def check_side_size(side_size)
   loop {
-    if sideSize.to_i > 0 && sideSize.to_i <= 10 then
+    if side_size > 0 && side_size <= 10 then
       break
     end
-    puts("カードのサイズは1~10の範囲しか選べません！")
+    puts("カードのサイズは1~10の範囲しか選べません！：")
+    side_size = gets.to_i
   }
-  puts("#{sideSize}x#{sideSize}マスのビンゴを始めます")
+  side_size
 end
 
 # プレイヤー人数が適切か確認するメソッド
-def setPlayerNumber(playerNumber)
+def check_player_number(player_number)
   loop {
-    if playerNumber.to_i > 0 then
+    if player_number.to_i > 0 then
       break
     end
-    puts("プレイヤー人数は1人以上です！")
+    puts("プレイヤー人数は1人以上です！：")
+    player_number = gets.to_i
   }
-
+  player_number
 end
 
 # 当選番号を取得・表示するメソッド
-def getLotteryNumber(lot, lotCount)
-  lotteryNumber = lot.lottery
+def check_lottery_number(lot, lot_count)
+  lottery_number = lot.lottery
   puts("")
-  puts("#{lotCount}回目：当選番号は#{lotteryNumber}です")
-  return lotteryNumber
+  puts("#{lot_count}回目：当選番号は#{lottery_number}です")
+  lottery_number
 end
 
 # ビンゴした人数を返すメソッド
-def checkBingo(cards, playerNumber, lotteryNumber)
-  bingoPlayerCount = 0
-  for i in 0..playerNumber - 1 do
+def check_bingo(cards, player_number, lottery_number)
+  bingo_player_count = 0
+  player_number.times do |i|
     card = cards.at(i)
     puts("【Player#{i + 1}】")
-    card.judgeHit(lotteryNumber)
-    card.showTable
-    if card.isBingo then
-      puts("#{card.getBingoCount}ビンゴ！！！")
-      bingoPlayerCount += 1
+    card.judge_hit(lottery_number)
+    card.show_table
+    if card.is_bingo then
+      puts("#{card.bingo_count}ビンゴ！！！")
+      bingo_player_count += 1
     end
   end
-  return bingoPlayerCount
+  bingo_player_count
 end
 
 
 #### ここからメイン処理 ####
 puts("ビンゴカードのサイズを決めてください：")
-sideSize = gets.to_i
-setSideSize(sideSize)
+side_size = check_side_size(gets.to_i)
 puts("何人でプレイしますか？：")
-playerNumber = gets.to_i
-setPlayerNumber(playerNumber)
+player_number = check_player_number(gets.to_i)
+puts("\n#{player_number}人で#{side_size}x#{side_size}マスのビンゴを始めます")
 
 cards = Array.new
-for i in 0..playerNumber - 1 do
-  cards << BingoCard.new(sideSize)
+player_number.times do |i|
+  cards << Bingo_card.new(side_size)
   card = cards.at(i)
-  card.initialPlace
+  card.initial_place
   puts("【Player#{i + 1}】")
-  card.showTable
+  card.show_table
 end
 
 lot = Lottery.new
-lotCount = 0
-loop {
-  lotCount += 1
-  lotteryNumber = getLotteryNumber(lot, lotCount)
-  bingoPlayerCount = checkBingo(cards, playerNumber, lotteryNumber)
-  if bingoPlayerCount > 0 then
-    puts("#{bingoPlayerCount}人ビンゴしたのでおわり")
+loop_with_index(1) do |lot_count|
+  lottery_number = check_lottery_number(lot, lot_count)
+  bingo_player_count = check_bingo(cards, player_number, lottery_number)
+  if bingo_player_count > 0 then
+    puts("#{bingo_player_count}人ビンゴしたのでおわり")
     break
   end
-}
+end
